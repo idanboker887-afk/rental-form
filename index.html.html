@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>טופס שכירות משרד</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --surface: #ffffff;
+    --primary: #1a3a2a;
+    --accent: #c8a96e;
+    --accent-light: #f0e6d0;
+    --text: #1a1a1a;
+    --text-muted: #6b6b6b;
+    --border: #d4c9b0;
+    --success: #2d6a4f;
+    --error: #c94040;
+    --radius: 12px;
+    --shadow: 0 2px 20px rgba(0,0,0,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Heebo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* Header */
+  .header {
+    background: var(--primary);
+    color: white;
+    padding: 28px 20px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; left: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(200,169,110,0.15);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; right: -20px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(200,169,110,0.1);
+  }
+  .header-logo {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 4px;
+  }
+  .header p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    background: var(--primary);
+    padding: 0 20px 20px;
+  }
+  .progress-steps {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+  }
+  .progress-step {
+    height: 4px;
+    flex: 1;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.2);
+    transition: background 0.4s;
+  }
+  .progress-step.active { background: var(--accent); }
+  .progress-step.done { background: rgba(200,169,110,0.5); }
+
+  .step-label {
+    text-align: center;
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    margin-top: 8px;
+  }
+
+  /* Container */
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 20px 16px 0;
+  }
+
+  /* Section card */
+  .section {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 22px 18px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(212,201,176,0.4);
+    display: none;
+    animation: fadeIn 0.35s ease;
+  }
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-icon {
+    width: 30px; height: 30px;
+    background: var(--accent-light);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+
+  /* Field */
+  .field {
+    margin-bottom: 14px;
+  }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+  }
+  .field label .req {
+    color: var(--accent);
+    margin-right: 2px;
+  }
+
+  .field input,
+  .field select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: #fdfcf8;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+  .field input:focus,
+  .field select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(26,58,42,0.08);
+    background: white;
+  }
+  .field input.error { border-color: var(--error); }
+  .field .hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* Option toggle */
+  .toggle-field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: var(--accent-light);
+    border-radius: 8px;
+    margin-bottom: 14px;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .toggle-field.on { border-color: var(--accent); }
+  .toggle-label { font-size: 14px; font-weight: 500; }
+  .toggle-switch {
+    width: 44px; height: 24px;
+    background: #ccc;
+    border-radius: 12px;
+    position: relative;
+    transition: background 0.3s;
+    flex-shrink: 0;
+  }
+  .toggle-switch.on { background: var(--primary); }
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 3px; right: 3px;
+    width: 18px; height: 18px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+  .toggle-switch.on::after { transform: translateX(-20px); }
+
+  .optional-fields {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .optional-fields.show { display: block; }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0;
+    opacity: 0.5;
+  }
+
+  /* Summary box */
+  .summary-box {
+    background: var(--accent-light);
+    border: 1.5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(200,169,110,0.3);
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-row .label { color: var(--text-muted); }
+  .summary-row .value { font-weight: 600; color: var(--primary); }
+
+  /* Buttons */
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .btn {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+  .btn-primary:active { background: #0f2419; transform: scale(0.98); }
+  .btn-secondary {
+    background: var(--accent-light);
+    color: var(--primary);
+    border: 1.5px solid var(--border);
+  }
+  .btn-submit {
+    background: var(--accent);
+    color: white;
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+  }
+  .btn-submit:active { background: #b8954f; transform: scale(0.98); }
+
+  /* Success screen */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+    animation: fadeIn 0.5s ease;
+  }
+  .success-screen.show { display: block; }
+  .success-icon {
+    width: 80px; height: 80px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    margin: 0 auto 20px;
+  }
+  .success-screen h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+  .success-screen p {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* Error message */
+  .error-msg {
+    color: var(--error);
+    font-size: 12px;
+    margin-top: 4px;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">הציונות אשדוד</div>
+  <h1>טופס שכירות משרד</h1>
+  <p>ממלאים פעם אחת — חוזה מוכן תוך דקות</p>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-steps">
+    <div class="progress-step active" id="ps1"></div>
+    <div class="progress-step" id="ps2"></div>
+    <div class="progress-step" id="ps3"></div>
+    <div class="progress-step" id="ps4"></div>
+  </div>
+  <div class="step-label" id="step-label">שלב 1 מתוך 4 — פרטי השוכר</div>
+</div>
+
+<div class="container">
+
+  <!-- STEP 1: פרטי השוכר -->
+  <div class="section active" id="step1">
+    <div class="section-title">
+      <div class="section-icon">🏢</div>
+      פרטי השוכר
+    </div>
+
+    <div class="field">
+      <label><span class="req">*</span> שם החברה / עסק</label>
+      <input type="text" id="company_name" placeholder="לדוגמה: אור ומאור ציוד ומזון בע״מ">
+    </div>
+    <div class="field">
+      <label><span class="req">*</span> ח.פ. / ת.ז.</label>
+      <input type="text" id="company_id" placeholder="מספר חברה או זהות" inputmode="numeric">
+    </div>
+    <div class="field">
+      <label><span class="req">*</span> שם מורשה חתימה</label>
+      <input type="text" id="signer_name" placeholder="שם מלא של המייצג">
+    </div>
+    <div class="field">
+      <label><span class="req">*</span> כתובת</label>
+      <input type="text" id="address" placeholder="רחוב, מספר, עיר">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label><span class="req">*</span> טלפון</label>
+        <input type="tel" id="phone" placeholder="05X-XXXXXXX" inputmode="tel">
+      </div>
+      <div class="field">
+        <label><span class="req">*</span> מייל</label>
+        <input type="email" id="email" placeholder="mail@example.com" inputmode="email">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="goStep(2)">הבא ←</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: פרטי המשרד -->
+  <div class="section" id="step2">
+    <div class="section-title">
+      <div class="section-icon">🔑</div>
+      פרטי המשרד
+    </div>
+
+    <div class="field">
+      <label><span class="req">*</span> מקום המושכר</label>
+      <select id="location" onchange="updateOfficeLabel()">
+        <option value="">— בחר נכס —</option>
+        <option value="אשדוד - הציונות">אשדוד — הציונות</option>
+        <option value="אשדוד - שבט לוי">אשדוד — שבט לוי</option>
+        <option value="אשדוד - צהל">אשדוד — צה״ל</option>
+        <option value="רמלה - שמחה הולצברג">רמלה — שמחה הולצברג</option>
+        <option value="פתח תקווה - שטמפפר">פתח תקווה — שטמפפר</option>
+        <option value="חולון - תמנע">חולון — תמנע</option>
+      </select>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label><span class="req">*</span> מספר נכס</label>
+        <input type="text" id="asset_num" placeholder="לדוגמה: 4578001004" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label><span class="req">*</span> מספר משרד</label>
+        <input type="text" id="office_num" placeholder="לדוגמה: 20" inputmode="numeric">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-title" style="margin-bottom:12px">
+      <div class="section-icon">📅</div>
+      תקופת השכירות
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label><span class="req">*</span> תאריך התחלה</label>
+        <input type="date" id="start_date">
+      </div>
+      <div class="field">
+        <label><span class="req">*</span> תאריך סיום</label>
+        <input type="date" id="end_date">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(1)">→ חזרה</button>
+      <button class="btn btn-primary" onclick="goStep(3)">הבא ←</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: תנאים כספיים -->
+  <div class="section" id="step3">
+    <div class="section-title">
+      <div class="section-icon">💰</div>
+      תנאים כספיים
+    </div>
+
+    <div class="field">
+      <label><span class="req">*</span> דמי שכירות חודשיים (₪)</label>
+      <input type="number" id="rent" placeholder="1200" inputmode="numeric" oninput="calcTotal()">
+    </div>
+    <div class="field">
+      <label><span class="req">*</span> דמי ניהול חודשיים (₪)</label>
+      <input type="number" id="mgmt" placeholder="200" inputmode="numeric" oninput="calcTotal()">
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- אופציה -->
+    <div class="toggle-field" id="optionToggle" onclick="toggleOption()">
+      <span class="toggle-label">📋 הוסף תקופת אופציה</span>
+      <div class="toggle-switch" id="optionSwitch"></div>
+    </div>
+
+    <div class="optional-fields" id="optionFields">
+      <div class="field">
+        <label>מספר תקופות אופציה</label>
+        <select id="option_periods">
+          <option value="1">אופציה אחת (12 חודשים)</option>
+          <option value="2">שתי אופציות (24 חודשים)</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>% עלייה בשכירות לאופציה</label>
+          <input type="number" id="rent_increase" placeholder="5" inputmode="numeric" oninput="calcTotal()">
+          <div class="hint">לדוגמה: 5 = 5% תוספת</div>
+        </div>
+        <div class="field">
+          <label>% עלייה בדמי ניהול לאופציה</label>
+          <input type="number" id="mgmt_increase" placeholder="3" inputmode="numeric" oninput="calcTotal()">
+        </div>
+      </div>
+    </div>
+
+    <!-- סיכום חישוב -->
+    <div class="summary-box" id="calcSummary" style="display:none">
+      <div class="summary-row">
+        <span class="label">סה״כ חודשי (בסיס)</span>
+        <span class="value" id="calc_base">—</span>
+      </div>
+      <div class="summary-row" id="calc_option_row" style="display:none">
+        <span class="label">סה״כ חודשי (אופציה)</span>
+        <span class="value" id="calc_option">—</span>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(2)">→ חזרה</button>
+      <button class="btn btn-primary" onclick="goStep(4)">הבא ←</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: פרטי ערב -->
+  <div class="section" id="step4">
+    <div class="section-title">
+      <div class="section-icon">🤝</div>
+      פרטי הערב
+    </div>
+
+    <div class="field">
+      <label><span class="req">*</span> שם הערב</label>
+      <input type="text" id="guarantor_name" placeholder="שם מלא">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label><span class="req">*</span> ת.ז. ערב</label>
+        <input type="text" id="guarantor_id" placeholder="מספר זהות" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label>טלפון ערב</label>
+        <input type="tel" id="guarantor_phone" placeholder="05X-XXXXXXX" inputmode="tel">
+      </div>
+    </div>
+    <div class="field">
+      <label>כתובת ערב</label>
+      <input type="text" id="guarantor_address" placeholder="רחוב, מספר, עיר">
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="summary-box">
+      <div style="font-size:13px; font-weight:600; color:var(--primary); margin-bottom:10px">📋 סיכום לפני שליחה</div>
+      <div class="summary-row">
+        <span class="label">שוכר</span>
+        <span class="value" id="sum_company">—</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">משרד</span>
+        <span class="value" id="sum_office">—</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">תקופה</span>
+        <span class="value" id="sum_period">—</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">שכירות + ניהול</span>
+        <span class="value" id="sum_payment">—</span>
+      </div>
+    </div>
+
+    <button class="btn btn-submit" onclick="submitForm()">
+      ✅ שלח לעיבוד חוזה
+    </button>
+    <div class="btn-row" style="margin-top:10px">
+      <button class="btn btn-secondary" onclick="goStep(3)">→ חזרה</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✅</div>
+    <h2>הפרטים נשלחו בהצלחה!</h2>
+    <p>הסוכן מעבד את הנתונים ומכין את חוזה השכירות.<br>
+    <strong>עידן יקבל את החוזה במייל בקרוב.</strong></p>
+    <br>
+    <p style="font-size:13px; color:var(--text-muted)">ניתן לסגור את הדף</p>
+  </div>
+
+</div>
+
+<script>
+  function updateOfficeLabel() {
+    // placeholder for future logic per location
+  }
+
+  
+  let optionOn = false;
+
+  const stepLabels = [
+    '', 'שלב 1 מתוך 4 — פרטי השוכר',
+    'שלב 2 מתוך 4 — פרטי המשרד',
+    'שלב 3 מתוך 4 — תנאים כספיים',
+    'שלב 4 מתוך 4 — פרטי ערב'
+  ];
+
+  function goStep(n) {
+    if (n > currentStep && !validateStep(currentStep)) return;
+
+    document.getElementById('step' + currentStep).classList.remove('active');
+    currentStep = n;
+    document.getElementById('step' + currentStep).classList.add('active');
+
+    // Progress
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById('ps' + i);
+      el.classList.remove('active', 'done');
+      if (i < n) el.classList.add('done');
+      if (i === n) el.classList.add('active');
+    }
+    document.getElementById('step-label').textContent = stepLabels[n];
+
+    if (n === 4) updateSummary();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function validateStep(step) {
+    const required = {
+      1: ['company_name', 'company_id', 'signer_name', 'address', 'phone', 'email'],
+      2: ['location', 'asset_num', 'office_num', 'start_date', 'end_date'],
+      3: ['rent', 'mgmt'],
+      4: []
+    };
+    let ok = true;
+    (required[step] || []).forEach(id => {
+      const el = document.getElementById(id);
+      if (!el.value.trim()) {
+        el.classList.add('error');
+        el.addEventListener('input', () => el.classList.remove('error'), { once: true });
+        ok = false;
+      }
+    });
+    if (!ok) {
+      const firstError = document.querySelector('.error');
+      if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return ok;
+  }
+
+  function toggleOption() {
+    optionOn = !optionOn;
+    document.getElementById('optionSwitch').classList.toggle('on', optionOn);
+    document.getElementById('optionToggle').classList.toggle('on', optionOn);
+    document.getElementById('optionFields').classList.toggle('show', optionOn);
+    calcTotal();
+  }
+
+  function calcTotal() {
+    const rent = parseFloat(document.getElementById('rent').value) || 0;
+    const mgmt = parseFloat(document.getElementById('mgmt').value) || 0;
+    if (rent === 0 && mgmt === 0) {
+      document.getElementById('calcSummary').style.display = 'none';
+      return;
+    }
+    const base = rent + mgmt;
+    document.getElementById('calcSummary').style.display = 'block';
+    document.getElementById('calc_base').textContent = '₪' + base.toLocaleString('he-IL');
+
+    const optRow = document.getElementById('calc_option_row');
+    if (optionOn) {
+      const ri = parseFloat(document.getElementById('rent_increase').value) || 0;
+      const mi = parseFloat(document.getElementById('mgmt_increase').value) || 0;
+      const optTotal = (rent * (1 + ri/100)) + (mgmt * (1 + mi/100));
+      document.getElementById('calc_option').textContent = '₪' + Math.round(optTotal).toLocaleString('he-IL');
+      optRow.style.display = 'flex';
+    } else {
+      optRow.style.display = 'none';
+    }
+  }
+
+  function updateSummary() {
+    document.getElementById('sum_company').textContent =
+      document.getElementById('company_name').value || '—';
+    document.getElementById('sum_office').textContent =
+      (document.getElementById('location').value || '—') + ' | משרד ' + (document.getElementById('office_num').value || '—') + ' | נכס ' + (document.getElementById('asset_num').value || '—');
+    const s = document.getElementById('start_date').value;
+    const e = document.getElementById('end_date').value;
+    document.getElementById('sum_period').textContent =
+      s && e ? formatDate(s) + ' – ' + formatDate(e) : '—';
+    const rent = document.getElementById('rent').value;
+    const mgmt = document.getElementById('mgmt').value;
+    document.getElementById('sum_payment').textContent =
+      rent && mgmt ? '₪' + (parseFloat(rent)+parseFloat(mgmt)).toLocaleString('he-IL') + ' לחודש' : '—';
+  }
+
+  function formatDate(d) {
+    const [y, m, day] = d.split('-');
+    return `${day}/${m}/${y}`;
+  }
+
+  function submitForm() {
+    if (!validateStep(4)) return;
+
+    const guarantor = document.getElementById('guarantor_name').value.trim();
+    const guarantorId = document.getElementById('guarantor_id').value.trim();
+    if (!guarantor || !guarantorId) {
+      ['guarantor_name','guarantor_id'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el.value.trim()) el.classList.add('error');
+      });
+      return;
+    }
+
+    // Collect all data
+    const data = {
+      company_name: document.getElementById('company_name').value,
+      company_id: document.getElementById('company_id').value,
+      signer_name: document.getElementById('signer_name').value,
+      address: document.getElementById('address').value,
+      phone: document.getElementById('phone').value,
+      email: document.getElementById('email').value,
+      location: document.getElementById('location').value,
+      office_num: document.getElementById('office_num').value,
+      asset_num: document.getElementById('asset_num').value,
+      start_date: document.getElementById('start_date').value,
+      end_date: document.getElementById('end_date').value,
+      rent: document.getElementById('rent').value,
+      mgmt: document.getElementById('mgmt').value,
+      option: optionOn ? {
+        periods: document.getElementById('option_periods').value,
+        rent_increase: document.getElementById('rent_increase').value,
+        mgmt_increase: document.getElementById('mgmt_increase').value,
+      } : null,
+      guarantor_name: guarantor,
+      guarantor_id: guarantorId,
+      guarantor_phone: document.getElementById('guarantor_phone').value,
+      guarantor_address: document.getElementById('guarantor_address').value,
+      submitted_at: new Date().toISOString()
+    };
+
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwR6BSH0MKVGe7DLnYHHwAPOwkJEAaA0DEXEOvkhs5TqWGFR1_8BrE9Tkgy4paZr91tA/exec';
+
+    const submitBtn = document.querySelector('.btn-submit');
+    submitBtn.textContent = '⏳ שולח...';
+    submitBtn.disabled = true;
+
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(() => {
+      document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+      document.querySelector('.progress-wrap').style.display = 'none';
+      document.getElementById('successScreen').classList.add('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    })
+    .catch(() => {
+      submitBtn.textContent = '✅ שלח לעיבוד חוזה';
+      submitBtn.disabled = false;
+      alert('שגיאה בשליחה — נסה שוב');
+    });
+  }
+</script>
+</body>
+</html>
